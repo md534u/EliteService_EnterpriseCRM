@@ -1,0 +1,2 @@
+ID,Nombre_Op,ID_Cuenta_FK,Etapa,Cantidad_Lineas,Fecha_Cierre,Servicio_Clave,Probabilidad,Tipo_Op,Comentarios
+1,Op Inicial | Test Company,1,Contacto,10,2026-01-22,Inicial,10,Venta Nueva,Creación de oportunidad inicial al convertir prospecto.

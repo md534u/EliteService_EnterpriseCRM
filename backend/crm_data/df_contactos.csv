@@ -1,0 +1,2 @@
+ID,Nombre,Apellido_Paterno,Email,Telefono,ID_Cuenta_FK,Rol
+1,Juan,Perez,,1234567890,1,Representante Legal

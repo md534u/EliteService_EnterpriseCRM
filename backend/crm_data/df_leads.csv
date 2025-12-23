@@ -1,0 +1,2 @@
+Folio,Segmento,Fecha_Registro,Nombre,Segundo_Nombre,Apellido_Paterno,Apellido_Materno,Fecha_Nacimiento,RFC,Telefono,Email_Facturacion,Razon_Social,RFC_Empresa,Giro,Calle,No_Exterior,No_Interno,Colonia,Municipio,Estado,CP,Estado_CRM
+TEST001,Persona Moral,,Juan,,Perez,,,,1234567890,,Test Company,,,,,,,,,,CONVERTIDO

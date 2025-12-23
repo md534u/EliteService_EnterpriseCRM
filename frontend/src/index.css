@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#f8f9fa] text-gray-800 font-sans;
+  }
+}
+
+.google-card {
+  @apply bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] p-6 transition-all duration-300 hover:shadow-[0_14px_28px_rgba(0,0,0,0.05),0_10px_10px_rgba(0,0,0,0.05)];
+}
+
+.input-field {
+  @apply w-full bg-[#f0f4f9] border-none rounded-lg h-11 px-4 text-gray-800 focus:ring-2 focus:ring-att-blue focus:outline-none transition-colors hover:bg-[#e2e7eb];
+}
+
+.btn-primary {
+  @apply bg-[#0b57d0] text-white font-medium py-2 px-4 rounded-full hover:bg-[#0842a0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-none;
+}
