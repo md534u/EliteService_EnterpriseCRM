@@ -1,5 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel
+from fastapi import Request
+
 
 class Lead(BaseModel):
     Folio: str
@@ -43,17 +45,27 @@ class Contact(BaseModel):
     ID_Cuenta_FK: Optional[str] = None
     Rol: Optional[str] = None
 
+from typing import Optional
+from pydantic import BaseModel
+
+
 class Opportunity(BaseModel):
-    ID: str
-    Nombre_Op: Optional[str] = None
+    ID: Optional[str] = None
     ID_Cuenta_FK: Optional[str] = None
-    Etapa: Optional[str] = None
-    Cantidad_Lineas: Optional[str] = None
-    Fecha_Cierre: Optional[str] = None
-    Servicio_Clave: Optional[str] = None
-    Probabilidad: Optional[float] = None  # Using float for calculations
+    Folio: Optional[str] = None
+    Nombre_Oportunidad: Optional[str] = None
+    Cliente: Optional[str] = None
+    Propietario: Optional[str] = None
     Tipo_Op: Optional[str] = None
-    Comentarios: Optional[str] = None
+    Valor: Optional[float] = None
+    Fecha_Cierre: Optional[str] = None
+    Cantidad_Lineas: Optional[int] = None
+    Canal_Ventas: Optional[str] = None
+    Etapa: Optional[str] = None
+    Probabilidad: Optional[int] = None
+    Motivo_Perdida: Optional[str] = None
+    Sub_Motivo: Optional[str] = None
+
 
 class Service(BaseModel):
     ID_Servicio: str

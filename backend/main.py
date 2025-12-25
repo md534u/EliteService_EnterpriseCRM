@@ -42,5 +42,49 @@ app.include_router(stats.router)
 def read_root():
     return {"message": "Welcome to EliteService CRM API"}
 
+# --- MÓDULO DE COTIZACIÓN ---
+from pydantic import BaseModel
+from typing import List, Any
+from fastapi.responses import Response
+from pdf_generator import create_quote_pdf # Importamos nuestro generador
+
+class QuoteItem(BaseModel):
+    dn: str
+    plan: str
+    dmr: str
+    plazo: str
+    equipo: str
+    precioEspecial: float
+    pagoEquipoMes: float
+    totalMensual: float
+    ahorro: float
+
+class QuoteHeader(BaseModel):
+    nombre: str
+    representante: str
+    vigencia: str
+    tramite: str
+
+class QuoteRequest(BaseModel):
+    header: QuoteHeader
+    items: List[QuoteItem]
+
+@app.post("/quotes/generate")
+def generate_quote_pdf(request: QuoteRequest):
+    # 1. Convertir el modelo Pydantic a diccionario simple para el generador
+    data = request.dict()
+    
+    # 2. Generar el PDF en memoria
+    pdf_bytes = create_quote_pdf(data)
+    
+    # 3. Devolverlo como archivo descargable
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=Cotizacion_{request.header.nombre}.pdf"
+        }
+    )
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

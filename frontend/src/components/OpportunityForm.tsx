@@ -10,7 +10,7 @@ interface Props {
 
 const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData }) => {
   const [formData, setFormData] = useState({
-    Nombre_Op: '',
+    Nombre_Oportunidad: '',
     Etapa: 'Prospección',
     Cantidad_Lineas: '',
     Fecha_Cierre: '',
@@ -25,7 +25,7 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
       setFormData(initialData);
     } else {
       setFormData({
-        Nombre_Op: '',
+        Nombre_Oportunidad: '',
         Etapa: 'Prospección',
         Cantidad_Lineas: '',
         Fecha_Cierre: '',
@@ -39,14 +39,23 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
 
   if (!isOpen) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  // ✅ Handler genérico (recomendado)
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    // Convertir campos numéricos antes de enviar
+    const payload = {
+      ...formData,
+      Cantidad_Lineas: Number(formData.Cantidad_Lineas) || 0,
+      Probabilidad: Number(formData.Probabilidad) || 0,
+    };
+    onSave(payload);
   };
 
   return (
@@ -63,10 +72,12 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Oportunidad</label>
-            <input 
-              name="Nombre_Op"
-              value={formData.Nombre_Op}
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Nombre Oportunidad
+            </label>
+            <input
+              name="Nombre_Oportunidad"
+              value={formData.Nombre_Oportunidad}
               onChange={handleChange}
               className="input-field"
               placeholder="Ej. Renovación de líneas 2024"
@@ -77,7 +88,7 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Etapa</label>
-              <select 
+              <select
                 name="Etapa"
                 value={formData.Etapa}
                 onChange={handleChange}
@@ -91,9 +102,10 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
                 <option value="Perdida">Perdida</option>
               </select>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-              <select 
+              <select
                 name="Tipo_Op"
                 value={formData.Tipo_Op}
                 onChange={handleChange}
@@ -109,8 +121,10 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad Líneas</label>
-              <input 
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Cantidad Líneas
+              </label>
+              <input
                 type="number"
                 name="Cantidad_Lineas"
                 value={formData.Cantidad_Lineas}
@@ -119,9 +133,12 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
                 placeholder="0"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Probabilidad (%)</label>
-              <input 
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Probabilidad (%)
+              </label>
+              <input
                 type="number"
                 name="Probabilidad"
                 value={formData.Probabilidad}
@@ -134,9 +151,11 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Servicio Clave</label>
-              <input 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Servicio Clave
+              </label>
+              <input
                 name="Servicio_Clave"
                 value={formData.Servicio_Clave}
                 onChange={handleChange}
@@ -144,9 +163,12 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
                 placeholder="Ej. Plan Empresarial 5G"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Cierre Est.</label>
-              <input 
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Fecha Cierre Est.
+              </label>
+              <input
                 type="date"
                 name="Fecha_Cierre"
                 value={formData.Fecha_Cierre}
@@ -157,8 +179,10 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Comentarios</label>
-            <textarea 
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Comentarios
+            </label>
+            <textarea
               name="Comentarios"
               value={formData.Comentarios}
               onChange={handleChange}
@@ -168,14 +192,14 @@ const OpportunityForm: React.FC<Props> = ({ isOpen, onClose, onSave, initialData
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t mt-4">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={onClose}
               className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 font-medium"
             >
               Cancelar
             </button>
-            <button 
+            <button
               type="submit"
               className="btn-primary flex items-center gap-2"
             >

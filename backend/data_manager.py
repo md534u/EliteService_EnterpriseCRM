@@ -2,7 +2,8 @@ import os
 import pandas as pd
 from typing import List, Optional, Any
 
-DATA_DIR = "crm_data"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "crm_data")
 DOCS_DIR = os.path.join(DATA_DIR, "documentos")
 
 # Define columns as per original code
@@ -58,8 +59,13 @@ class DataManager:
             filepath, _ = FILE_MAPPING[df_name]
             self.data[df_name].to_csv(filepath, index=False)
 
-    def get_df(self, df_name: str) -> pd.DataFrame:
-        return self.data.get(df_name)
+    def get_df(self, name: str) -> pd.DataFrame:
+        df = self.data.get(name)
+
+        if df is None:
+            return pd.DataFrame()
+
+        return df
 
     def set_df(self, df_name: str, df: pd.DataFrame):
         self.data[df_name] = df

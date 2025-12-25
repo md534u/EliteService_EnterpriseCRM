@@ -9,6 +9,7 @@ import SearchPage from './pages/SearchPage';
 import QuoteGenerator from './pages/QuoteGenerator';
 import TicketsPage from './pages/TicketsPage';
 import InteractionsPage from './pages/InteractionsPage';
+import OpportunityDetail from './pages/OpportunityDetail'; // <--- Importar
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="register" element={<RegisterClient />} />
           <Route path="universe" element={<Universe />} />
           <Route path="universe/:id" element={<AccountDetail />} />
+          <Route path="/opportunity/:id" element={<OpportunityDetail />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="quotes" element={<QuoteGenerator />} />
           <Route path="tickets" element={<TicketsPage />} />

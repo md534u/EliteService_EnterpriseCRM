@@ -15,19 +15,24 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { API_URL } from '../config';
+import OpportunityList from '../components/OpportunityList';
+import OpportunityForm from '../components/OpportunityForm';
 
 const AccountDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [account, setAccount] = useState<any>(null);
-  const [contacts, setContacts] = useState([]);
-  const [services, setServices] = useState([]);
-  const [opportunities, setOpportunities] = useState([]);
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
+  const [opportunities, setOpportunities] = useState<any[]>([]);
   const [quotes, setQuotes] = useState([]);
   
   const [activeTab, setActiveTab] = useState('expediente');
   const [editMode, setEditMode] = useState(false);
   const [editForm, setEditForm] = useState<any>({});
+
+  const [isOpFormOpen, setIsOpFormOpen] = useState(false);
+  const [editingOp, setEditingOp] = useState<any>(null);
 
   useEffect(() => {
     if (id) {
@@ -66,6 +71,33 @@ const AccountDetail = () => {
       setEditMode(false);
       alert("Cuenta actualizada.");
     } catch (e) { alert("Error al actualizar"); }
+  };
+
+  const handleCreateOp = () => {
+    setEditingOp(null);
+    setIsOpFormOpen(true);
+  };
+
+  const handleEditOp = (op: any) => {
+    setEditingOp(op);
+    setIsOpFormOpen(true);
+  };
+
+  const handleSaveOp = async (opData: any) => {
+    try {
+      if (editingOp) {
+        await axios.put(`${API_URL}/opportunities/${editingOp.ID}`, opData);
+        alert('Oportunidad actualizada');
+      } else {
+        await axios.post(`${API_URL}/opportunities/`, { ...opData, ID_Cuenta_FK: id });
+        alert('Oportunidad creada');
+      }
+      setIsOpFormOpen(false);
+      fetchData(); // Refresh data
+    } catch (e) {
+      console.error(e);
+      alert('Error al guardar oportunidad');
+    }
   };
 
   if (!account) return <div className="p-10 text-center">Cargando...</div>;
@@ -170,6 +202,16 @@ const AccountDetail = () => {
       </div>
 
       <div className="bg-white min-h-[400px] p-6 rounded-b-xl shadow-sm border border-gray-200 border-t-0">
+        {activeTab === 'ops' && (
+          <OpportunityList 
+            opportunities={opportunities} 
+            onCreate={handleCreateOp} 
+            onEdit={handleEditOp}
+            accountData={account}    // <--- AQUÍ ESTÁ LA MAGIA
+            contacts={contacts}      // <--- Y AQUÍ
+          />
+        )}
+
         {activeTab === 'servicios' && (
           <div>
             <h3 className="text-lg font-bold text-gray-700 mb-4">Líneas Contratadas</h3>
@@ -204,7 +246,6 @@ const AccountDetail = () => {
           </div>
         )}
 
-        {/* Other tabs can be implemented similarly with tables/forms */}
         {activeTab === 'expediente' && (
            <div className="text-center py-10 text-gray-500">
              <FileText size={48} className="mx-auto mb-4 text-gray-300" />
@@ -245,6 +286,13 @@ const AccountDetail = () => {
              </div>
         )}
       </div>
+
+      <OpportunityForm 
+        isOpen={isOpFormOpen}
+        onClose={() => setIsOpFormOpen(false)}
+        onSave={handleSaveOp}
+        initialData={editingOp}
+      />
     </div>
   );
 };
