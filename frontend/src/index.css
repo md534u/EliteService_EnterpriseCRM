@@ -32,7 +32,7 @@
       #d1d5db 40%,
       #9ca3af 100%
     ),
-    url('/src/assets/textures/brushed-metal.png');
+    url('/brushed-metal.png');
 
   background-size: cover;
   background-position: center;
