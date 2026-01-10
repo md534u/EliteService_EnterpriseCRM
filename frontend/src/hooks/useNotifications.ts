@@ -24,7 +24,7 @@ export const useNotifications = (user: string | null) => {
         try {
             setLoading(true);
             // Assuming backend is running on localhost:8000
-            const response = await fetch(`http://localhost:8000/notifications/?user=${encodeURIComponent(user)}`);
+            const response = await fetch(`https://crm-backend-56gq.onrender.com/notifications/?user=${encodeURIComponent(user)}`);
             if (response.ok) {
                 const data = await response.json();
                 setNotifications(data);
@@ -38,7 +38,7 @@ export const useNotifications = (user: string | null) => {
 
     const markAsRead = async (id: string) => {
         try {
-            const response = await fetch(`http://localhost:8000/notifications/${id}/read`, {
+            const response = await fetch(`https://crm-backend-56gq.onrender.com/notifications/${id}/read`, {
                 method: 'PATCH'
             });
             if (response.ok) {

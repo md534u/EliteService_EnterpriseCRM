@@ -30,7 +30,7 @@ const Universe = () => {
 
   const fetchAccounts = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/accounts/');
+      const response = await axios.get('https://crm-backend-56gq.onrender.com/accounts/');
       setAccounts(response.data);
     } catch (error) {
       console.error("Error cargando cuentas:", error);

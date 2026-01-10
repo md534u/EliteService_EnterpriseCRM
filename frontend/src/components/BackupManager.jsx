@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'https://crm-backend-56gq.onrender.com';
 
 const BackupManager = () => {
   const [stats, setStats] = useState({
