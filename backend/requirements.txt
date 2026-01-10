@@ -4,5 +4,6 @@ pandas
 fpdf
 python-multipart
 python-socketio
-passlib[bcrypt]
+passlib
 python-jose[cryptography]
+bcrypt==3.2.2
