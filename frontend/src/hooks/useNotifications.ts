@@ -23,7 +23,7 @@ export const useNotifications = (user: string | null) => {
 
         try {
             setLoading(true);
-            // Assuming backend is running on localhost:8000
+            // Assuming backend is running on https://crm-backend-56gq.onrender.com:8000
             const response = await fetch(`https://crm-backend-56gq.onrender.com/notifications/?user=${encodeURIComponent(user)}`);
             if (response.ok) {
                 const data = await response.json();

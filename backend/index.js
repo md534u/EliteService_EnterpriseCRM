@@ -19,7 +19,7 @@ const server = http.createServer(app);
 // --- CAMBIO 2: SOCKET.IO ADAPTADO ---
 const io = new Server(server, {
     cors: {
-        origin: "*", // Aceptamos conexiones desde tu localhost y desde la web publicada
+        origin: "*", // Aceptamos conexiones desde tu https://crm-backend-56gq.onrender.com y desde la web publicada
         methods: ["GET", "POST"]
     }
 });

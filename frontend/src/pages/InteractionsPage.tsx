@@ -74,7 +74,7 @@ const InteractionsPage = () => {
 
   useEffect(() => {
     // Conectamos al servidor que tienes corriendo en el puerto 4000
-    const socket = io("http://localhost:4000");
+    const socket = io("http://https://crm-backend-56gq.onrender.com:4000");
 
     // Escuchamos el evento que configuramos en el index.js del backend
     socket.on("new_mail_notification", (data) => {
