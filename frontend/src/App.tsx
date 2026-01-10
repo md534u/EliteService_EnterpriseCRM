@@ -23,7 +23,10 @@ import { useNotifications } from './hooks/useNotifications';
 import { ToastProvider, useToast } from './context/ToastContext';
 
 // Inicialización del Socket (fuera del componente)
-const socket = io('http://https://crm-backend-56gq.onrender.com:4000');
+const socket = io("https://crm-backend-56gq.onrender.com", {
+    transports: ["websocket", "polling"], // Opcional, pero ayuda
+    withCredentials: true
+});
 
 // --- COMPONENTE ESCUCHA (EL CEREBRO DE LA NOTIFICACIÓN) ---
 const SocketListener = () => {
