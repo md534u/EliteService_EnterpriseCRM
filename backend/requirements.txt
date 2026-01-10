@@ -6,4 +6,3 @@ python-multipart
 python-socketio
 passlib
 python-jose[cryptography]
-bcrypt==3.2.2

@@ -14,7 +14,7 @@ SECRET_KEY = "tu_clave_secreta_super_segura_cambiala_por_algo_largo" # ⚠️ CA
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 # 24 horas
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 DB_NAME = "crm.db"
