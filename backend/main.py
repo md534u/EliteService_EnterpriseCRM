@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional
-from routers import leads, accounts, contacts, gestiones, tickets, interactions, notifications
+from routers import leads, accounts, contacts, gestiones, tickets, interactions, notifications, auth
 from models import StatsResponse, BackupStatsResponse
 import sqlite3
 import os
@@ -35,6 +35,7 @@ app.include_router(gestiones.router)
 app.include_router(tickets.router)
 app.include_router(interactions.router)
 app.include_router(notifications.router)
+app.include_router(auth.router)
 
 # --- MODELOS Y LOGICA DE PRODUCTOS ---
 class Product(BaseModel):
