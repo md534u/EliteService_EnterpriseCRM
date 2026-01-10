@@ -11,7 +11,14 @@ import shutil
 import zipfile
 from datetime import datetime
 
+# --- CAMBIO 1: IMPORTAR SOCKETIO ---
+import socketio 
+
 app = FastAPI(title="CRM EliteService API")
+
+# --- CAMBIO 2: CREAR EL SERVIDOR DE SOCKETS (CON EL FIX DE CORS) ---
+# Esto crea el servidor que escucha las conexiones en tiempo real
+sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins="*")
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,14 +27,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Registro de rutas: Esto elimina los errores 404 al llamar a /opportunities
+# Registro de rutas
 app.include_router(leads.router)
 app.include_router(accounts.router)
 app.include_router(contacts.router)
-app.include_router(gestiones.router) # Registro crucial
-app.include_router(tickets.router) # Registro de Tickets
+app.include_router(gestiones.router)
+app.include_router(tickets.router)
 app.include_router(interactions.router)
-app.include_router(notifications.router) # Registro de Notificaciones
+app.include_router(notifications.router)
 
 # --- MODELOS Y LOGICA DE PRODUCTOS ---
 class Product(BaseModel):
@@ -40,8 +47,8 @@ class Product(BaseModel):
     status: str
 
 DB_NAME = "crm.db"
-BACKUP_DIR = "backups" # Carpeta donde se guardan los backups
-UPLOADS_DIR = "uploads" # Carpeta de archivos adjuntos/imágenes
+BACKUP_DIR = "backups"
+UPLOADS_DIR = "uploads"
 CRM_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "crm_data")
 
 def init_db():
@@ -113,17 +120,14 @@ def get_dashboard_stats():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     
-    # Función auxiliar para contar registros de forma segura
     def count_table(table_name):
         try:
             cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
             result = cursor.fetchone()
             return result[0] if result else 0
         except sqlite3.OperationalError:
-            # Si la tabla no existe aún, devolvemos 0
             return 0
 
-    # Obtenemos los conteos
     c_leads = count_table("leads")
     c_accounts = count_table("accounts")
     c_opportunities = count_table("opportunities")
@@ -144,23 +148,18 @@ def get_dashboard_stats():
 
 @app.get("/stats/backups-size")
 def get_backup_stats():
-    # Calcular espacio usado en vivo
     live_size = 0
-
     if os.path.exists(DB_NAME):
         live_size += os.path.getsize(DB_NAME)
-
     if os.path.exists(CRM_DATA_DIR):
         for root, _, files in os.walk(CRM_DATA_DIR):
             for f in files:
                 live_size += os.path.getsize(os.path.join(root, f))
-
     if os.path.exists(UPLOADS_DIR):
         for root, _, files in os.walk(UPLOADS_DIR):
             for f in files:
                 live_size += os.path.getsize(os.path.join(root, f))
 
-    # --- LISTA DE ARCHIVOS DE BACKUP ---
     files = []
     if os.path.exists(BACKUP_DIR):
         for f in os.listdir(BACKUP_DIR):
@@ -185,32 +184,26 @@ def get_backup_stats():
         "files": files
     }
 
-
 @app.post("/create-backup")
 def create_new_backup():
     if not os.path.exists(BACKUP_DIR):
         os.makedirs(BACKUP_DIR)
     
-    # Nombre FIJO para sobrescribir siempre el mismo
     filename = "backup_sistema_actual.zip"
     dest_path = os.path.join(BACKUP_DIR, filename)
     
     try:
         with zipfile.ZipFile(dest_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # 1. Agregar Base de Datos
             if os.path.exists(DB_NAME):
                 zipf.write(DB_NAME, arcname=DB_NAME)
             
-            # 2. Agregar carpeta crm_data (CSVs) - CRÍTICO
             if os.path.exists(CRM_DATA_DIR):
                 for root, dirs, files in os.walk(CRM_DATA_DIR):
                     for file in files:
                         file_path = os.path.join(root, file)
-                        # Guardar con la estructura de carpetas relativa (ej: crm_data/archivo.csv)
                         rel_path = os.path.relpath(file_path, os.path.dirname(CRM_DATA_DIR))
                         zipf.write(file_path, arcname=rel_path)
 
-            # 3. Agregar carpeta de uploads (recursivamente)
             if os.path.exists(UPLOADS_DIR):
                 for root, dirs, files in os.walk(UPLOADS_DIR):
                     for file in files:
@@ -223,32 +216,25 @@ def create_new_backup():
             "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
     except Exception as e:
-        # No borramos el archivo si falla, para mantener el anterior si existía
         raise HTTPException(status_code=500, detail=f"Error al crear backup: {str(e)}")
     
 @app.get("/backups/{filename}/contents")
 def get_backup_contents(filename: str):
     file_path = os.path.join(BACKUP_DIR, filename)
-
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Backup no encontrado")
-
     if not zipfile.is_zipfile(file_path):
         raise HTTPException(status_code=400, detail="El archivo no es un ZIP válido")
-
     try:
         with zipfile.ZipFile(file_path, 'r') as zipf:
             files = zipf.namelist()
-
         return {
             "filename": filename,
             "file_count": len(files),
             "files": files
         }
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.get("/backups/{filename}")
 def download_backup_file(filename: str):
@@ -260,19 +246,15 @@ def download_backup_file(filename: str):
 @app.get("/backups/{filename}/contents")
 def list_backup_contents(filename: str):
     backup_path = os.path.join(BACKUP_DIR, filename)
-
     if not os.path.exists(backup_path):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
-
     if not filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="No es un ZIP")
-
     with zipfile.ZipFile(backup_path, 'r') as zipf:
         return {
             "filename": filename,
             "files": zipf.namelist()
         }
-
 
 @app.post("/restore-backup/{filename}")
 def restore_database(filename: str):
@@ -282,17 +264,22 @@ def restore_database(filename: str):
     
     try:
         if filename.endswith('.zip'):
-            # Restaurar desde ZIP (DB + Archivos)
             with zipfile.ZipFile(backup_path, 'r') as zipf:
                 zipf.extractall(path=".")
         else:
-            # Soporte retroactivo para archivos .db antiguos
             shutil.copy2(backup_path, DB_NAME)
             
         return {"message": f"Base de datos restaurada exitosamente desde {filename}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al restaurar la base de datos: {str(e)}")
 
+# --- CAMBIO 3: ENVOLVER LA APP PARA QUE FUNCIONEN LOS SOCKETS ---
+# Esto es vital. Le decimos a Python: "La variable 'app' ahora contiene
+# tanto los sockets como la API de FastAPI".
+# Así Render usa esta variable 'app' y todo funciona.
+app = socketio.ASGIApp(sio, app)
+
 if __name__ == "__main__":
     import uvicorn
+    # Nota: uvicorn usa la variable 'app' que acabamos de redefinir arriba
     uvicorn.run(app, host="0.0.0.0", port=8000)
