@@ -1,3 +1,1 @@
-ID,Nombre_Oportunidad,ID_Cuenta_FK,Etapa,Cantidad_Lineas,Fecha_Cierre,Servicio_Clave,Probabilidad,Tipo_Oportunidad,Comentarios,Folio,Fecha_Creacion,Motivo_Perdida,Submotivo_Cuenta
-1,,1,Contacto,10,2026-01-22,Inicial,10,,Creación de oportunidad inicial al convertir prospecto.,OP-2025-00001,2025-12-24,,
-2,,2,Propuesta,10,2026-01-22,Inicial,50,,En propuesta,OP-2025-00002,2025-12-24,,
+﻿ID,Nombre_Oportunidad,ID_Cuenta_FK,Etapa,Cantidad_Lineas,Fecha_Cierre,Servicio_Clave,Probabilidad,Tipo_Oportunidad,Comentarios,Folio,Fecha_Creacion,Motivo_Perdida,Submotivo_Cuenta,Nombre_Representante,Nombre_Cuenta

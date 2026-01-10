@@ -1,88 +1,126 @@
-from fastapi import APIRouter, HTTPException, Response
-from typing import List
-from models import CreateQuoteRequest, Quote
-from data_manager import db
-from utils.pdf_generator import generate_pdf_bytes
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from fastapi.responses import FileResponse
+from typing import List, Optional
 import pandas as pd
-import json
-import uuid
 import os
+import shutil
+import uuid
+import json
+from datetime import datetime
+import sys
+
+# Asegurar rutas
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data_manager import db 
 
 router = APIRouter(prefix="/quotes", tags=["Quotes"])
 
-@router.get("/", response_model=List[Quote])
-def get_quotes(account_id: str = None):
-    df = db.get_df('df_cotizaciones')
-    if df.empty:
+# Directorio de uploads
+UPLOAD_DIR = os.path.join("crm_data", "quotes")
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
+# --- 1. OBTENER LISTA ---
+@router.get("/")
+def get_quotes(account_id: Optional[str] = None, opportunity_id: Optional[str] = None):
+    try:
+        df = db.get_df('df_cotizaciones')
+    except:
         return []
+
+    if df.empty: return []
     
-    if account_id:
-        df = df[df['ID_Cuenta_FK'] == account_id]
+    # Normalizar para búsquedas (convertir a string para evitar errores de tipo)
+    # Filtro por Cuenta
+    if account_id and 'ID_Cuenta_FK' in df.columns:
+        df = df[df['ID_Cuenta_FK'].astype(str) == str(account_id)]
+    
+    # Filtro por Oportunidad (usando la columna correcta)
+    if opportunity_id and 'ID_Oportunidad_FK' in df.columns:
+        df = df[df['ID_Oportunidad_FK'].astype(str) == str(opportunity_id)]
         
-    return df.where(pd.notnull(df), None).to_dict(orient='records')
+    return df.replace({float('nan'): None}).to_dict(orient='records')
 
-@router.post("/generate")
-def generate_quote_pdf(request: CreateQuoteRequest):
-    # Calculate totals
-    total_mensual = sum(item.TOTAL_MENSUAL for item in request.Items)
-    ahorro_total = sum(item.AHORRO_EQ for item in request.Items)
-    
-    # User info (mocked for now, normally from Auth)
-    user_name = "Marcos Victor de la O Cano"
-    exec_info = {
-        "PUESTO": "Especialista en Servicio Empresarial",
-        "TIENDA": "Tienda Monterrey Nuevo León Plaza Nia",
-        "MOVIL": "81.1378.5486",
-        "EMAIL": "md534u@mx.att.com",
-        "GESTIONES": "rm-Gestiones.Especiales@mx.att.com"
-    }
+# --- 2. SUBIR Y GUARDAR (MAPEO EXACTO A TUS COLUMNAS) ---
+@router.post("/upload")
+async def upload_quote(
+    file: UploadFile = File(...),
+    opportunity_id: str = Form(...),
+    total_amount: str = Form(...),
+    notes: str = Form(None)
+):
+    try:
+        # 1. Guardar archivo físico
+        safe_filename = file.filename or f"cotizacion_{uuid.uuid4()}.pdf"
+        file_ext = os.path.splitext(safe_filename)[1]
+        unique_name = f"{os.path.splitext(safe_filename)[0]}_{str(uuid.uuid4())[:8]}{file_ext}"
+        file_path = os.path.join(UPLOAD_DIR, unique_name)
 
-    # Generate PDF
-    pdf_bytes = generate_pdf_bytes(
-        request.Items,
-        request.Nombre_Cliente,
-        request.Representante,
-        request.Vigencia,
-        total_mensual,
-        ahorro_total,
-        exec_info,
-        user_name
-    )
-    
-    # Save Metadata to DB
-    # Determine Version
-    version = "1"
-    if request.ID_Oportunidad_FK:
-        df_cots = db.get_df('df_cotizaciones')
-        if not df_cots.empty:
-            existing = df_cots[df_cots['ID_Oportunidad_FK'] == request.ID_Oportunidad_FK]
-            if not existing.empty:
-                try:
-                    max_v = pd.to_numeric(existing['Version'], errors='coerce').fillna(0).max()
-                    version = str(int(max_v) + 1)
-                except: pass
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-    quote_id = str(uuid.uuid4())[:8]
-    # Serialize items
-    # Convert Pydantic models to dicts first
-    items_dicts = [item.dict() for item in request.Items]
-    items_json = json.dumps(items_dicts)
-    
-    new_quote = {
-        'ID': quote_id,
-        'ID_Oportunidad_FK': request.ID_Oportunidad_FK or "",
-        'ID_Cuenta_FK': request.ID_Cuenta_FK or "",
-        'Nombre_Cliente': request.Nombre_Cliente,
-        'Fecha_Emision': request.Fecha_Emision,
-        'Vigencia': request.Vigencia,
-        'Version': version,
-        'Total_Mensual': total_mensual,
-        'Ahorro_Total': ahorro_total,
-        'Items_JSON': items_json,
-        'Ruta_PDF': f"quotes/{quote_id}.pdf", # Placeholder path
-        'Usuario': user_name
-    }
-    
-    db.add_row('df_cotizaciones', new_quote)
-    
-    return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=Cotizacion_{request.Nombre_Cliente}_{version}.pdf"})
+        # 2. RECUPERAR DATOS FALTANTES (Cuenta y Cliente)
+        # Como el frontend solo manda ID de Oportunidad, buscamos el resto en la BD
+        id_cuenta = ""
+        nombre_cliente = "Cliente Desconocido"
+        
+        try:
+            # Buscar Oportunidad para sacar ID Cuenta
+            df_ops = db.get_df('df_opportunities')
+            if not df_ops.empty:
+                op_row = df_ops[df_ops['ID'].astype(str) == str(opportunity_id)]
+                if not op_row.empty:
+                    # Intenta buscar columna ID_Cuenta_FK o account_id
+                    if 'ID_Cuenta_FK' in op_row.columns:
+                        id_cuenta = str(op_row.iloc[0]['ID_Cuenta_FK'])
+                    elif 'account_id' in op_row.columns:
+                        id_cuenta = str(op_row.iloc[0]['account_id'])
+
+            # Buscar Cuenta para sacar Nombre Cliente
+            if id_cuenta:
+                df_acc = db.get_df('df_accounts')
+                if not df_acc.empty:
+                    acc_row = df_acc[df_acc['ID'].astype(str) == str(id_cuenta)]
+                    if not acc_row.empty:
+                        nombre_cliente = acc_row.iloc[0].get('Nombre_Cuenta', 'Cliente')
+        except Exception as e:
+            print(f"Advertencia: No se pudieron autocompletar datos de cuenta: {e}")
+
+        # 3. CREAR DICCIONARIO CON TUS COLUMNAS EXACTAS
+        # ID,ID_Oportunidad_FK,ID_Cuenta_FK,Nombre_Cliente,Fecha_Emision,Vigencia,Version,Total_Mensual,Ahorro_Total,Items_JSON,Ruta_PDF,Usuario
+        
+        new_quote = {
+            "ID": str(uuid.uuid4()),
+            "ID_Oportunidad_FK": str(opportunity_id),
+            "ID_Cuenta_FK": str(id_cuenta),
+            "Nombre_Cliente": str(nombre_cliente),
+            "Fecha_Emision": datetime.now().strftime("%Y-%m-%d"),
+            "Vigencia": str(notes) if notes else "15 días", # Usamos las notas como vigencia o referencia
+            "Version": "1",
+            "Total_Mensual": float(total_amount) if total_amount else 0.0,
+            "Ahorro_Total": 0.0, # Frontend no lo envía en el upload, se pone 0 por defecto
+            "Items_JSON": "[]",  # PDF generado en frontend, no tenemos los items aquí.
+            "Ruta_PDF": unique_name, # Guardamos solo el nombre para que sea relativo
+            "Usuario": "Sistema Web"
+        }
+
+        # 4. Guardar en Base de Datos
+        db.add_row('df_cotizaciones', new_quote)
+        
+        print("✅ Cotización guardada con columnas correctas.")
+
+        return {"status": "success", "filename": unique_name, "id": new_quote["ID"]}
+
+    except Exception as e:
+        print(f"Error crítico subiendo archivo: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error al guardar: {str(e)}")
+
+# --- 3. DESCARGAR ---
+@router.get("/download/{filename}")
+async def download_quote(filename: str):
+    file_path = os.path.join(UPLOAD_DIR, filename)
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type='application/pdf', filename=filename)
+    raise HTTPException(status_code=404, detail="Archivo no encontrado")

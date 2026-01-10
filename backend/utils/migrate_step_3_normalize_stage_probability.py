@@ -16,8 +16,7 @@ ETAPAS_OPORTUNIDAD = [
     'Propuesta',
     'Negociación',
     'Firma',
-    'En validación por Crédito',
-    'Oportunidad Ganada',
+    'En validaciónanada',
     'Oportunidad Perdida'
 ]
 
@@ -29,7 +28,6 @@ PROBABILIDAD_POR_ETAPA = {
     'Negociación': 75,
     'Firma': 90,
     'En validación por Crédito': 95,
-    'Oportunidad Ganada': 100,
     'Oportunidad Perdida': 0
 }
 
@@ -50,11 +48,8 @@ ETAPA_MAP = {
 
     'Firma': 'Firma',
 
-    'Validación Crédito': 'En validación por Crédito',
-    'Validacion Credito': 'En validación por Crédito',
-    'En validación por Crédito': 'En validación por Crédito',
+    'Validación Crédito': 'En validación',
 
-    'Ganada': 'Oportunidad Ganada',
     'Cerrada Ganada': 'Oportunidad Ganada',
     'Oportunidad Ganada': 'Oportunidad Ganada',
 

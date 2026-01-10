@@ -1,6 +1,24 @@
+# --- BASURA PESADA (Ya los tenías) ---
 node_modules/
 venv/
-.env
+.venv/
 __pycache__/
 dist/
+build/
 .DS_Store
+.env
+
+# --- CRÍTICO: NO SUBIR BASE DE DATOS LOCAL ---
+*.db
+*.sqlite3
+crm_data/
+
+# --- ARCHIVOS DE USUARIO ---
+uploads/*
+!uploads/.gitkeep
+
+# --- SISTEMA / IDE ---
+.vscode/
+iniciar_todo.bat
+*.zip
+*.csv

@@ -1,17 +1,31 @@
-import React from 'react';
+import { Outlet } from 'react-router-dom';
+
+// Importamos sin llaves {} porque son export default
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import { Outlet } from 'react-router-dom';
 
 const DashboardLayout = () => {
   return (
-    <div className="flex min-h-screen bg-[#f8f9fa]">
+    <div className="min-h-screen bg-gray-50">
+      
+      {/* 1. SIDEBAR */}
+      {/* Se renderiza fijo a la izquierda (según sus propios estilos internos) */}
       <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col">
+
+      {/* 2. CONTENEDOR PRINCIPAL */}
+      {/* CORRECCIÓN: Agregamos 'md:ml-64' para dejar espacio al Sidebar */}
+      <div className="flex flex-col md:ml-64 min-h-screen transition-all duration-300">
+        
+        {/* Encabezado Superior */}
         <Header />
-        <main className="flex-1 p-6 overflow-auto">
-          <Outlet />
+
+        {/* Área de Contenido Scrollable */}
+        <main className="flex-1 p-6">
+          <div className="mx-auto max-w-7xl animate-in fade-in duration-300">
+            <Outlet />
+          </div>
         </main>
+
       </div>
     </div>
   );

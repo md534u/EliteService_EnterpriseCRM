@@ -1,3 +1,1 @@
-Folio,Segmento,Fecha_Registro,Nombre,Segundo_Nombre,Apellido_Paterno,Apellido_Materno,Fecha_Nacimiento,RFC,Telefono,Email_Facturacion,Razon_Social,RFC_Empresa,Giro,Calle,No_Exterior,No_Interno,Colonia,Municipio,Estado,CP,Estado_CRM
-TEST001,Persona Moral,,Juan,,Perez,,,,1234567890,,Test Company,,,,,,,,,,CONVERTIDO
-REGB2B625625,Persona Moral,2025-12-23,MARCOS,VICTOR,DE LA O,CANO,2000-01-01,,8111608845,facturacion@bosimplificado.com,BO SIMPLIFICADO SA DE CV,BOS081022RMC,SOLUCIONES DE EXPERIENCIA DEL CLIENTE (CX) Y BPO,AV CUMBRES,301,,LAS MONTAÑAS,SAN PEDRO GARZA GARCIA,NUEVO LEON,66474,CONVERTIDO
+﻿Folio,Segmento,Fecha_Registro,Nombre,Segundo_Nombre,Apellido_Paterno,Apellido_Materno,Fecha_Nacimiento,RFC,Telefono,Email_Facturacion,Razon_Social,RFC_Empresa,Giro,Calle,No_Exterior,No_Interno,Colonia,Municipio,Estado,CP,Estado_CRM

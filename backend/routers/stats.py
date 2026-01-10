@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from data_manager import db
+from data_manager import db, DATA_DIR
 import pandas as pd
+import os
 
 router = APIRouter(prefix="/stats", tags=["Stats"])
 
@@ -71,3 +72,27 @@ def get_dashboard_stats():
         "pipeline_chart": grouped_pipeline,
         "risk_alerts": lines_risk
     }
+
+@router.get("/backups-size")
+def get_backups_size():
+    backup_dir = os.path.join(DATA_DIR, "backups")
+    total_size = 0
+    file_count = 0
+    files = []
+
+    if os.path.exists(backup_dir):
+        for f in os.listdir(backup_dir):
+            fp = os.path.join(backup_dir, f)
+            if os.path.isfile(fp):
+                total_size += os.path.getsize(fp)
+                file_count += 1
+                files.append(f)  # ✅ AQUÍ ESTÁ LA CLAVE
+
+    return {
+        "backup_exists": file_count > 0,
+        "total_size_bytes": total_size,
+        "total_size_mb": round(total_size / (1024 * 1024), 2),
+        "file_count": file_count,
+        "files": files  # ✅ AHORA SÍ
+    }
+

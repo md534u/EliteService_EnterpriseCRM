@@ -16,6 +16,7 @@ NEW_COLUMNS = {
     'Fecha_Creacion': None,
     'Motivo_Perdida': None,
     'Submotivo_Cuenta': None,
+    'Canal_Origen': None,
 }
 
 def run():

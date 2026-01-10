@@ -1,3 +1,1 @@
-ID,Nombre,Apellido_Paterno,Email,Telefono,ID_Cuenta_FK,Rol
-1,Juan,Perez,,1234567890,1,Representante Legal
-2,MARCOS,DE LA O,facturacion@bosimplificado.com,8111608845,2,Representante Legal
+﻿ID,Nombre,Apellido_Paterno,Email,Telefono,ID_Cuenta_FK,Rol,Nombre_Completo

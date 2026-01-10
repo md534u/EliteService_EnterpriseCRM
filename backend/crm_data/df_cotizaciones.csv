@@ -1,2 +1,1 @@
-ID,ID_Oportunidad_FK,ID_Cuenta_FK,Nombre_Cliente,Fecha_Emision,Vigencia,Version,Total_Mensual,Ahorro_Total,Items_JSON,Ruta_PDF,Usuario
-db9aed30,,,Cliente Test Restart,2024-01-01,2024-02-01,1,500.0,200.0,"[{""DN"": ""1234567890"", ""PLAN"": ""Plan Test"", ""PLAZO"": ""24 MESES"", ""EQUIPO"": ""iPhone"", ""PRECIO_ESPECIAL"": 1000.0, ""PAGO_EQ_MES"": 100.0, ""TOTAL_MENSUAL"": 500.0, ""AHORRO_EQ"": 200.0}]",quotes/db9aed30.pdf,Marcos Victor de la O Cano
+﻿ID,ID_Oportunidad_FK,ID_Cuenta_FK,Nombre_Cliente,Fecha_Emision,Vigencia,Version,Total_Mensual,Ahorro_Total,Items_JSON,Ruta_PDF,Usuario
