@@ -9,6 +9,8 @@ import sqlite3
 import os
 import shutil
 import zipfile
+import asyncio 
+from imap_tools import MailBox, AND
 from datetime import datetime
 
 # --- CAMBIO 1: IMPORTAR SOCKETIO ---
@@ -26,6 +28,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- CONFIGURACIÓN DEL CORREO ---
+EMAIL_USER = "bosimplificado.2025@gmail.com"  # ⚠️ PON TU CORREO AQUÍ
+EMAIL_PASS = "ddnb agzk ggyp ivik"  # ⚠️ PON LA CLAVE DE 16 LETRAS AQUÍ (SIN ESPACIOS)
+IMAP_SERVER = "imap.gmail.com"
 
 # Registro de rutas
 app.include_router(leads.router)
@@ -66,9 +73,40 @@ def init_db():
     conn.commit()
     conn.close()
 
+async def email_watcher():
+    """Revisa correos nuevos cada 10 segundos y notifica."""
+    print("👀 Iniciando vigilancia de correos...")
+    while True:
+        try:
+            # Conectamos a Gmail (usando un contexto para que cierre solo)
+            # NOTA: Esto se conecta, revisa y desconecta rápido.
+            with MailBox(IMAP_SERVER).login(EMAIL_USER, EMAIL_PASS) as mailbox:
+                
+                # Buscamos SOLO los correos NO LEÍDOS (UNSEEN)
+                for msg in mailbox.fetch(AND(seen=False), limit=5):
+                    print(f"📩 NUEVO CORREO DETECTADO: {msg.subject}")
+                    
+                    # 1. Avisamos al Frontend por Socket
+                    await sio.emit('new_mail_notification', {
+                        'from': msg.from_,
+                        'subject': msg.subject
+                    })
+                    
+                    # 2. (Opcional) Marcamos como leído para no avisar doble
+                    # Si quieres que sigan apareciendo como "no leídos" en tu Gmail,
+                    # quita o comenta la siguiente línea:
+                    # mailbox.flag(msg.uid, map_tools.MailMessageFlags.SEEN, True)
+            
+        except Exception as e:
+            print(f"⚠️ Error leyendo correos: {e}")
+            
+        # Esperamos 10 segundos antes de revisar otra vez
+        await asyncio.sleep(10)
+
 @app.on_event("startup")
-def startup_event():
+async def startup_event():
     init_db()
+    asyncio.create_task(email_watcher())
 
 @app.get("/products", response_model=List[Product])
 def get_products():
