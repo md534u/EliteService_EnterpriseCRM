@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
 // Layouts y Páginas
+import LoginPage from './pages/LoginPage'; // <--- IMPORTANTE: Importamos la página nueva
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import RegisterClient from './pages/RegisterClient';
@@ -16,38 +17,29 @@ import LeadUniverse from './pages/LeadUniverse';
 import ProductList from './components/ProductList';
 import GestionDetail from './pages/GestionDetail'; 
 import GestionesPage from './pages/GestionesPage'; 
+import { AuthProvider, useAuth } from './context/AuthContext'; // <--- Importamos useAuth también
 
 // Hooks y Contextos
 import { useNotifications } from './hooks/useNotifications';
-// IMPORTAMOS TU CONTEXTO REAL
 import { ToastProvider, useToast } from './context/ToastContext';
 
 // Inicialización del Socket (fuera del componente)
 const socket = io("https://crm-backend-56gq.onrender.com", {
-    transports: ["websocket", "polling"], // Opcional, pero ayuda
-    withCredentials: true
+  transports: ["websocket", "polling"], 
+  withCredentials: true
 });
 
 // --- COMPONENTE ESCUCHA (EL CEREBRO DE LA NOTIFICACIÓN) ---
 const SocketListener = () => {
-  // 1. Usamos TU hook de diseño visual
   const { addToast } = useToast();
-  
-  // 2. Usamos el hook de datos para actualizar la campanita (si existe)
   const { fetchNotifications } = useNotifications(null);
 
   useEffect(() => {
-    // Escuchamos el evento desde el servidor
-    socket.on('new_mail_notification', (data: { from: string; subject: string }) => {
+    socket.on('new_mail_notification', (data) => {
       console.log("🔔 Notificación recibida:", data);
-
-      // A. Actualizamos los datos del CRM (la lista de notificaciones)
       if (fetchNotifications) {
         fetchNotifications();
       }
-
-      // B. Disparamos TU TOAST PROFESIONAL
-      // Usamos 'info' porque es un correo entrante
       addToast(`De: ${data.from} - Asunto: ${data.subject}`, 'info');
     });
 
@@ -56,34 +48,60 @@ const SocketListener = () => {
     };
   }, [addToast, fetchNotifications]);
 
-  return null; // No renderiza nada, solo trabaja en el fondo
+  return null;
+};
+
+// --- COMPONENTE GUARDIÁN (PROTECTED ROUTE) ---
+// Este componente verifica si tienes token. Si no, te manda al Login.
+const ProtectedRoute = ({ children }) => {
+  const { token, loading } = useAuth();
+  
+  if (loading) return <div>Cargando...</div>; // O un spinner bonito
+  
+  if (!token) {
+    // Si no hay token, redirigir a Login
+    return <Navigate to="/login" replace />;
+  }
+
+  // Si hay token, mostrar la página protegida (el Dashboard)
+  return children;
 };
 
 // --- APP PRINCIPAL ---
 function App() {
   return (
-    // Envolvemos todo en el ToastProvider para que funcione el addToast
     <ToastProvider>
-      {/* El Listener debe estar adentro para poder usar useToast */}
       <SocketListener />
       
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="gestiones" element={<GestionesPage />} />
-            <Route path="gestion/:id" element={<GestionDetail />} />
-            <Route path="register" element={<RegisterClient />} />
-            <Route path="universe" element={<Universe />} />
-            <Route path="universe/:id" element={<AccountDetail />} />
-            <Route path="products" element={<ProductList />} />
-            <Route path="search" element={<SearchPage />} />
-            <Route path="tickets" element={<TicketsPage />} />
-            <Route path="tickets/create" element={<CreateTicketPage />} />
-            <Route path="leads" element={<LeadUniverse />} />
-            <Route path="interactions" element={<InteractionsPage />} />
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            
+            {/* 1. RUTA PÚBLICA: LOGIN (Sin Sidebar, Pantalla completa) */}
+            <Route path="/login" element={<LoginPage />} />
+
+            {/* 2. RUTAS PRIVADAS: DASHBOARD (Protegidas) */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Dashboard />} />
+              <Route path="gestiones" element={<GestionesPage />} />
+              <Route path="gestion/:id" element={<GestionDetail />} />
+              <Route path="register" element={<RegisterClient />} />
+              <Route path="universe" element={<Universe />} />
+              <Route path="universe/:id" element={<AccountDetail />} />
+              <Route path="products" element={<ProductList />} />
+              <Route path="search" element={<SearchPage />} />
+              <Route path="tickets" element={<TicketsPage />} />
+              <Route path="tickets/create" element={<CreateTicketPage />} />
+              <Route path="leads" element={<LeadUniverse />} />
+              <Route path="interactions" element={<InteractionsPage />} />
+            </Route>
+
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </ToastProvider>
   );
