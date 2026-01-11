@@ -62,7 +62,7 @@ const LoginPage = () => {
             </div>
           </div>
           <h2 className="text-2xl font-bold text-white relative z-10">Acceso Seguro</h2>
-          <p className="text-blue-100 text-sm mt-1 relative z-10">CRM EliteService</p>
+          <p className="text-blue-100 text-sm mt-1 relative z-10">CRM Servicio Elite B2B</p>
         </div>
 
         {/* Formulario */}
@@ -122,7 +122,7 @@ const LoginPage = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-400">© 2026 AT&T Telecomunicaciones</p>
+            <p className="text-xs text-gray-400">© 2026 Back Office Simplificado</p>
           </div>
         </div>
       </div>
