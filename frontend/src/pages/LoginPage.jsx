@@ -70,12 +70,12 @@ const LoginPage = () => {
               <div className="w-16 h-16 mx-auto bg-gradient-to-tr from-cyan-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 shadow-lg">
                 <Hexagon className="text-white" size={32} fill="currentColor" />
               </div>
-              <h1 className="text-3xl font-bold mb-2 tracking-tight text-white">BO Simplificado</h1>
+              <h1 className="text-3xl font-bold mb-2 tracking-tight text-white">BO Simplificado MX</h1>
               <div className="h-1 w-16 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full my-4"></div>
               <p className="text-gray-300 text-sm font-medium tracking-wider uppercase">CRM Servicio Elite B2B</p>
             </div>
             <p className="text-gray-400 text-sm max-w-xs leading-relaxed font-light">
-              Plataforma de gestión empresarial inteligente con análisis de datos geométricos.
+              Plataforma de gestión empresarial para servicios de atención al cliente.
             </p>
           </div>
           
