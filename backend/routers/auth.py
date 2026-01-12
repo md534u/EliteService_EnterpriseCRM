@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from pydantic import BaseModel
+from enum import Enum
 from datetime import datetime, timedelta
 from typing import Optional
 import sqlite3
@@ -20,10 +21,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 DB_NAME = "crm.db"
 
 # --- MODELOS ---
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    USER = "user"
+    SOPORTE = "soporte"
+    GERENTE = "gerente"
+
 class UserCreate(BaseModel):
     username: str
     password: str
-    role: str = "user" # user, admin
+    role: UserRole = UserRole.USER
 
 class Token(BaseModel):
     access_token: str
@@ -83,7 +90,7 @@ def register_user(user: UserCreate):
     
     # 3. Guardar
     cursor.execute("INSERT INTO users (username, hashed_password, role) VALUES (?, ?, ?)",
-                   (user.username, hashed_pw, user.role))
+                   (user.username, hashed_pw, user.role.value))
     conn.commit()
     conn.close()
     
