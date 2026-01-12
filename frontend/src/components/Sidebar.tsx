@@ -9,7 +9,8 @@ import {
   FileText, 
   Search, 
   Globe,
-  Package
+  Package,
+  Shield
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
@@ -30,6 +31,7 @@ const Sidebar = () => {
     { icon: Search, label: 'Búsqueda', path: '/search' },
     { icon: Ticket, label: 'Requerimientos', path: '/tickets' },
     { icon: Phone, label: 'Interacciones', path: '/interactions' },
+    { icon: Shield, label: 'Usuarios', path: '/users' },
     
     // ❌ ELIMINADO: Ya no existe el acceso directo a Cotizador
     // { icon: FileText, label: 'Cotizador', path: '/quotes' }, 

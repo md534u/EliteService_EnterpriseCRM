@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { useState } from 'react';
 
 // Layouts y Páginas
 import LoginPage from './pages/LoginPage'; // <--- IMPORTANTE: Importamos la página nueva
@@ -21,7 +20,6 @@ import GestionDetail from './pages/GestionDetail';
 import GestionesPage from './pages/GestionesPage'; 
 import UsersPage from './pages/UsersPage';
 import { AuthProvider, useAuth } from './context/AuthContext'; // <--- Importamos useAuth también
-import ConfirmModal from './components/ConfirmModal';
 
 // Hooks y Contextos
 import { useNotifications } from './hooks/useNotifications';
@@ -57,7 +55,7 @@ const SocketListener = () => {
 
 // --- COMPONENTE GUARDIÁN (PROTECTED ROUTE) ---
 // Este componente verifica si tienes token. Si no, te manda al Login.
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token, loading } = useAuth();
   
   if (loading) return <div>Cargando...</div>; // O un spinner bonito
