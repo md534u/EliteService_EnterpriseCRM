@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 // Layouts y Páginas
 import LoginPage from './pages/LoginPage'; // <--- IMPORTANTE: Importamos la página nueva
+import UnauthorizedPage from './pages/UnauthorizedPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import RegisterClient from './pages/RegisterClient';
@@ -18,6 +19,7 @@ import LeadUniverse from './pages/LeadUniverse';
 import ProductList from './components/ProductList';
 import GestionDetail from './pages/GestionDetail'; 
 import GestionesPage from './pages/GestionesPage'; 
+import UsersPage from './pages/UsersPage';
 import { AuthProvider, useAuth } from './context/AuthContext'; // <--- Importamos useAuth también
 import ConfirmModal from './components/ConfirmModal';
 
@@ -81,6 +83,7 @@ function App() {
             
             {/* 1. RUTA PÚBLICA: LOGIN (Sin Sidebar, Pantalla completa) */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* 2. RUTAS PRIVADAS: DASHBOARD (Protegidas) */}
             <Route path="/" element={
@@ -100,6 +103,7 @@ function App() {
               <Route path="tickets/create" element={<CreateTicketPage />} />
               <Route path="leads" element={<LeadUniverse />} />
               <Route path="interactions" element={<InteractionsPage />} />
+              <Route path="users" element={<UsersPage />} />
             </Route>
 
           </Routes>

@@ -16,7 +16,7 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
 
   // 2. Si se especifican roles y el usuario NO tiene uno de ellos
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/" replace />; // O a una página de "No Autorizado"
+    return <Navigate to="/unauthorized" replace />;
   }
 
   // 3. Si pasa las validaciones, mostrar el contenido
