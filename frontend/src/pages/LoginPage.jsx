@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Lock, User, Loader2, Hexagon } from 'lucide-react';
+import { API_URL } from '../config';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -23,7 +24,7 @@ const LoginPage = () => {
       formData.append('username', username);
       formData.append('password', password);
 
-      const response = await fetch('https://crm-backend-56gq.onrender.com/auth/login', {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -42,7 +43,7 @@ const LoginPage = () => {
       navigate('/'); // Nos lleva al Dashboard
       
     } catch (err) {
-      setError('Usuario o contraseña incorrectos');
+      setError(err.message || 'Error al iniciar sesión');
       console.error(err);
     } finally {
       setIsLoading(false);
