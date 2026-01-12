@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../context/ToastContext';
-import { Bell, Menu, Search, X, CheckCircle, AlertCircle, Info, AlertTriangle, Clock } from 'lucide-react';
+import { Bell, Menu, Search, X, CheckCircle, AlertCircle, Info, AlertTriangle, Clock, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -19,6 +19,15 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
     return () => clearInterval(timer);
   }, []);
+
+  const handleLogout = () => {
+    if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+      // Limpiamos el almacenamiento local (tokens, datos de usuario, etc.)
+      localStorage.clear();
+      // Redirigimos a la pantalla de login o inicio (ajusta la ruta si es diferente)
+      window.location.href = '/login';
+    }
+  };
 
   return (
     // CAMBIO 1: Fondo gris (bg-gray-100) y borde más marcado para diferenciar
@@ -110,6 +119,15 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                     {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </span>
             </div>
+
+            {/* Botón Cerrar Sesión */}
+            <button 
+                onClick={handleLogout}
+                className="ml-2 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="Cerrar Sesión"
+            >
+                <LogOut size={20} />
+            </button>
 
         </div>
     </header>
