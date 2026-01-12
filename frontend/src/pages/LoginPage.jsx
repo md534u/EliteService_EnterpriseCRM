@@ -85,7 +85,7 @@ const LoginPage = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#0b57d0] focus:border-transparent outline-none transition-all"
-                  placeholder="Ej: md534u"
+                  placeholder="Ej: AXC13163"
                 />
               </div>
             </div>
