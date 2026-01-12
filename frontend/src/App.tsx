@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { useState } from 'react';
 
 // Layouts y Páginas
 import LoginPage from './pages/LoginPage'; // <--- IMPORTANTE: Importamos la página nueva
@@ -18,6 +19,7 @@ import ProductList from './components/ProductList';
 import GestionDetail from './pages/GestionDetail'; 
 import GestionesPage from './pages/GestionesPage'; 
 import { AuthProvider, useAuth } from './context/AuthContext'; // <--- Importamos useAuth también
+import ConfirmModal from './components/ConfirmModal';
 
 // Hooks y Contextos
 import { useNotifications } from './hooks/useNotifications';

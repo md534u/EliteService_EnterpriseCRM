@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext'; // 👈 IMPORTANTE: Traemos el contexto de Auth
+import ConfirmModal from './ConfirmModal'; // 👈 IMPORTANTE: Importamos tu nuevo Modal
 import { Bell, Menu, Search, X, CheckCircle, AlertCircle, Info, AlertTriangle, Clock, LogOut } from 'lucide-react';
 
-interface HeaderProps {
-  onMenuClick: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
+const Header = ({ onMenuClick }) => {
   const { toasts, removeToast } = useToast();
+  const { logout } = useAuth(); // 👈 Usamos la función logout del contexto
+  
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // 1. Estado para controlar si el Modal se muestra o no
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Efecto para actualizar el reloj cada segundo
   useEffect(() => {
@@ -20,18 +23,20 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleLogout = () => {
-    if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-      // Limpiamos el almacenamiento local (tokens, datos de usuario, etc.)
-      localStorage.clear();
-      // Redirigimos a la pantalla de login o inicio (ajusta la ruta si es diferente)
-      window.location.href = '/login';
-    }
+  // 2. Función modificada: Solo abre el modal, NO cierra sesión todavía
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  // 3. Función que SI cierra la sesión (se ejecuta al dar "Sí" en el modal)
+  const confirmLogout = () => {
+    logout(); // Llama a tu lógica central de logout
+    setShowLogoutModal(false); // Cierra el modal
   };
 
   return (
-    // CAMBIO 1: Fondo gris (bg-gray-100) y borde más marcado para diferenciar
-    <header className="bg-gray-100 border-b border-gray-300 h-16 flex items-center justify-between px-6 sticky top-0 z-30 font-sans shadow-sm">
+    <>
+      <header className="bg-gray-100 border-b border-gray-300 h-16 flex items-center justify-between px-6 sticky top-0 z-30 font-sans shadow-sm">
         
         {/* IZQUIERDA: Menú y Buscador */}
         <div className="flex items-center gap-4">
@@ -40,7 +45,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             </button>
             <div className="relative hidden md:block">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                {/* Ajuste: Fondo blanco en el input para resaltar sobre el header gris */}
                 <input 
                     type="text" 
                     placeholder="Buscar clientes, folios..." 
@@ -112,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             
             <div className="h-8 w-px bg-gray-300 mx-2 hidden sm:block"></div>
             
-            {/* CAMBIO: RELOJ DIGITAL (En lugar del Usuario) */}
+            {/* RELOJ DIGITAL */}
             <div className="hidden sm:flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-300 shadow-sm text-gray-700">
                 <Clock size={16} className="text-blue-600" />
                 <span className="text-sm font-mono font-bold tracking-wide">
@@ -120,9 +124,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                 </span>
             </div>
 
-            {/* Botón Cerrar Sesión */}
+            {/* BOTÓN CERRAR SESIÓN */}
             <button 
-                onClick={handleLogout}
+                onClick={handleLogoutClick} // 👈 Cambiado: Ahora llama a la función que abre el modal
                 className="ml-2 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                 title="Cerrar Sesión"
             >
@@ -130,7 +134,17 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             </button>
 
         </div>
-    </header>
+      </header>
+
+      {/* 👇 AQUÍ INSERTAMOS EL MODAL DE CONFIRMACIÓN */}
+      <ConfirmModal 
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="¿Cerrar Sesión?"
+        message="¿Estás seguro de que deseas salir del CRM? Tendrás que iniciar sesión nuevamente."
+      />
+    </>
   );
 };
 
