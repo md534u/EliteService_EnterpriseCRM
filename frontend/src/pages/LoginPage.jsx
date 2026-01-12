@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, User, Loader2, Hexagon } from 'lucide-react';
+import { Lock, User, Loader2, Hexagon, CheckCircle } from 'lucide-react';
 import { API_URL } from '../config';
 
 const LoginPage = () => {
@@ -9,6 +9,8 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  const [welcomeName, setWelcomeName] = useState('');
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -40,18 +42,28 @@ const LoginPage = () => {
 
       // Si todo sale bien, guardamos el token y entramos
       login(data);
-      navigate('/'); // Nos lleva al Dashboard
+      
+      // 1. Mostramos el mensaje de bienvenida personalizado
+      setWelcomeName(data.username);
+      
+      // 2. Esperamos 1.5s para que el usuario lea el mensaje antes de iniciar la salida
+      setTimeout(() => {
+        setIsExiting(true); // Inicia fade-out
+        
+        setTimeout(() => {
+          navigate('/'); // Redirige al terminar fade-out
+        }, 800);
+      }, 1500);
       
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión');
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="h-screen w-full flex flex-col md:flex-row font-sans overflow-hidden bg-white">
+    <div className={`h-screen w-full flex flex-col md:flex-row font-sans overflow-hidden bg-white transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 filter blur-sm' : 'opacity-100 scale-100'}`}>
         
         {/* Panel Izquierdo (Branding) */}
         <div className="hidden md:flex md:w-1/2 bg-[#0B0C10] relative flex-col justify-between p-12 text-white overflow-hidden h-full">
@@ -89,69 +101,81 @@ const LoginPage = () => {
         {/* Panel Derecho (Formulario) */}
         <div className="w-full md:w-1/2 flex flex-col justify-between bg-white h-full relative">
           <div className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32">
-            <div className="mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Bienvenido</h2>
-              <p className="text-gray-500">Ingrese sus credenciales para continuar</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded text-sm text-red-700 animate-pulse">
-                  {error}
+            {welcomeName ? (
+              <div className="text-center animate-in fade-in zoom-in duration-500">
+                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                  <CheckCircle className="text-green-600" size={48} />
                 </div>
-              )}
-
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-gray-700 ml-1 uppercase tracking-wide">Usuario</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="text-gray-400" size={20} />
-                  </div>
-                  <input
-                    type="text"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 ease-in-out sm:text-sm focus:bg-white shadow-sm"
-                    placeholder="Ingrese su usuario"
-                  />
-                </div>
+                <h2 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">¡Hola, {welcomeName}!</h2>
+                <p className="text-gray-500 text-lg">Accediendo al sistema...</p>
               </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-gray-700 ml-1 uppercase tracking-wide">Contraseña</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="text-gray-400" size={20} />
-                  </div>
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 ease-in-out sm:text-sm focus:bg-white shadow-sm"
-                    placeholder="••••••••"
-                  />
+            ) : (
+              <>
+                <div className="mb-12">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Bienvenido</h2>
+                  <p className="text-gray-500">Ingrese sus credenciales para continuar</p>
                 </div>
-              </div>
 
-              <div className="pt-6">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full flex justify-center py-4 px-4 rounded-xl shadow-xl text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 transform hover:-translate-y-0.5 tracking-widest uppercase"
-                >
-                  {isLoading ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="animate-spin" size={20} />
-                      <span>VERIFICANDO...</span>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {error && (
+                    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded text-sm text-red-700 animate-pulse">
+                      {error}
                     </div>
-                  ) : (
-                    'INGRESAR'
                   )}
-                </button>
-              </div>
-            </form>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700 ml-1 uppercase tracking-wide">Usuario</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <User className="text-gray-400" size={20} />
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="block w-full pl-10 pr-3 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 ease-in-out sm:text-sm focus:bg-white shadow-sm"
+                        placeholder="Ingrese su usuario"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700 ml-1 uppercase tracking-wide">Contraseña</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Lock className="text-gray-400" size={20} />
+                      </div>
+                      <input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="block w-full pl-10 pr-3 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 ease-in-out sm:text-sm focus:bg-white shadow-sm"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-6">
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full flex justify-center py-4 px-4 rounded-xl shadow-xl text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 transform hover:-translate-y-0.5 tracking-widest uppercase"
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="animate-spin" size={20} />
+                          <span>VERIFICANDO...</span>
+                        </div>
+                      ) : (
+                        'INGRESAR'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
           </div>
 
           <div className="py-6 text-center shrink-0">
