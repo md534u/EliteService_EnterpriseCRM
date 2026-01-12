@@ -50,11 +50,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans transition-colors duration-300">
-      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden max-w-6xl w-full flex flex-col md:flex-row min-h-[700px]">
+    <div className="h-screen w-full flex flex-col md:flex-row font-sans overflow-hidden bg-white">
         
         {/* Panel Izquierdo (Branding) */}
-        <div className="hidden md:flex md:w-5/12 bg-[#0B0C10] relative flex-col justify-between p-12 text-white overflow-hidden">
+        <div className="hidden md:flex md:w-1/2 bg-[#0B0C10] relative flex-col justify-between p-12 text-white overflow-hidden h-full">
           {/* Fondo Geométrico Sutil */}
           <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
               backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)',
@@ -87,10 +86,10 @@ const LoginPage = () => {
         </div>
 
         {/* Panel Derecho (Formulario) */}
-        <div className="w-full md:w-7/12 p-8 md:p-16 flex flex-col justify-center bg-white relative">
-          <div className="max-w-md mx-auto w-full">
+        <div className="w-full md:w-1/2 flex flex-col justify-between bg-white h-full relative">
+          <div className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32">
             <div className="mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Bienvenido</h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Bienvenido</h2>
               <p className="text-gray-500">Ingrese sus credenciales para continuar</p>
             </div>
 
@@ -101,8 +100,8 @@ const LoginPage = () => {
                 </div>
               )}
 
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 ml-1">Usuario</label>
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 ml-1 uppercase tracking-wide">Usuario</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User className="text-gray-400" size={20} />
@@ -112,14 +111,14 @@ const LoginPage = () => {
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-150 ease-in-out sm:text-sm focus:bg-white"
+                    className="block w-full pl-10 pr-3 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 ease-in-out sm:text-sm focus:bg-white shadow-sm"
                     placeholder="Ingrese su usuario"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 ml-1">Contraseña</label>
+              <div className="space-y-2">
+                <label className="block text-sm font-bold text-gray-700 ml-1 uppercase tracking-wide">Contraseña</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="text-gray-400" size={20} />
@@ -129,17 +128,17 @@ const LoginPage = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-150 ease-in-out sm:text-sm focus:bg-white"
+                    className="block w-full pl-10 pr-3 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 ease-in-out sm:text-sm focus:bg-white shadow-sm"
                     placeholder="••••••••"
                   />
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-6">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center py-3.5 px-4 rounded-lg shadow-lg text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 transform hover:-translate-y-0.5 tracking-wide"
+                  className="w-full flex justify-center py-4 px-4 rounded-xl shadow-xl text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 transform hover:-translate-y-0.5 tracking-widest uppercase"
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-2">
@@ -152,15 +151,14 @@ const LoginPage = () => {
                 </button>
               </div>
             </form>
+          </div>
 
-            <div className="mt-12 text-center">
-              <p className="text-xs text-gray-400">
-                © 2026 Back Office Simplificado. Protected by Enterprise Shield.
-              </p>
-            </div>
+          <div className="py-6 text-center shrink-0">
+            <p className="text-xs text-gray-400">
+              © 2026 Back Office Simplificado. Protected by Enterprise Shield.
+            </p>
           </div>
         </div>
-      </div>
     </div>
   );
 };
