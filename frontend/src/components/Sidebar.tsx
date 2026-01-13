@@ -85,7 +85,7 @@ const Sidebar = () => {
                 {(user.full_name || user.username)?.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{user.full_name || user.username}</p>
+                <p className="text-sm font-medium text-white truncate" title={user.username}>{user.full_name || user.username}</p>
                 <p className="text-xs text-gray-400 truncate">{user.position || user.role}</p>
                 </div>
             </div>
