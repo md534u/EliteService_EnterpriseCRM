@@ -81,12 +81,12 @@ const Sidebar = () => {
       <div className="p-4 border-t border-gray-800 bg-gray-900">
          {user && (
             <div className="flex items-center gap-3 px-2">
-                <div className="w-8 h-8 rounded-full bg-[#BF0CEA] text-white flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-full bg-[#BF0CEA] text-white flex items-center justify-center font-bold text-xs" title={user.full_name || user.username}>
                 {(user.full_name || user.username)?.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate" title={user.username}>{user.full_name || user.username}</p>
-                <p className="text-xs text-gray-400 truncate">{user.position || user.role}</p>
+                <p className="text-sm font-medium text-white truncate" title={user.full_name || user.username}>{user.full_name || user.username}</p>
+                <p className="text-xs text-gray-400 truncate" title={user.position || user.role}>{user.position || user.role}</p>
                 </div>
             </div>
          )}
