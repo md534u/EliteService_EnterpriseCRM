@@ -6,7 +6,7 @@ import { Bell, Menu, Search, X, CheckCircle, AlertCircle, Info, AlertTriangle, C
 
 const Header = ({ onMenuClick }) => {
   const { toasts, removeToast } = useToast();
-  const { logout, user } = useAuth(); // 👈 Extraemos también el objeto 'user'
+  const { logout } = useAuth();
   
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -123,21 +123,6 @@ const Header = ({ onMenuClick }) => {
                     {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </span>
             </div>
-
-            {/* INFO USUARIO */}
-            {user && (
-                <div className="hidden md:flex items-center gap-3 pl-4 border-l border-gray-300 ml-2 h-8">
-                    <div className="flex flex-col items-end justify-center">
-                        <span className="text-sm font-bold text-gray-700 leading-none">{user.username}</span>
-                        <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mt-0.5">
-                            {user.role}
-                        </span>
-                    </div>
-                    <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                        {user.username?.charAt(0).toUpperCase()}
-                    </div>
-                </div>
-            )}
 
             {/* BOTÓN CERRAR SESIÓN */}
             <button 

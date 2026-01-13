@@ -45,7 +45,7 @@ const LoginPage = () => {
       login(data);
       
       // 1. Mostramos el mensaje de bienvenida personalizado
-      setWelcomeName(data.username);
+      setWelcomeName(data.full_name || data.username);
       
       // 2. Esperamos 1.5s para que el usuario lea el mensaje antes de iniciar la salida
       setTimeout(() => {

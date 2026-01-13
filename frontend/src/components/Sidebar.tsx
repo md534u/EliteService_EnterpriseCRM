@@ -14,8 +14,10 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
+  const { user } = useAuth();
   const location = useLocation();
   
   // Aquí definimos las rutas.
@@ -77,15 +79,17 @@ const Sidebar = () => {
       
       {/* Footer del Usuario */}
       <div className="p-4 border-t border-gray-800 bg-gray-900">
-         <div className="flex items-center gap-3 px-2">
-            <div className="w-8 h-8 rounded-full bg-[#BF0CEA] text-white flex items-center justify-center font-bold text-xs">
-               VC
+         {user && (
+            <div className="flex items-center gap-3 px-2">
+                <div className="w-8 h-8 rounded-full bg-[#BF0CEA] text-white flex items-center justify-center font-bold text-xs">
+                {(user.full_name || user.username)?.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">{user.full_name || user.username}</p>
+                <p className="text-xs text-gray-400 truncate">{user.position || user.role}</p>
+                </div>
             </div>
-            <div className="flex-1 min-w-0">
-               <p className="text-sm font-medium text-white truncate">Victor de la O Cano</p>
-               <p className="text-xs text-gray-400 truncate">Especialista Empresarial</p>
-            </div>
-         </div>
+         )}
       </div>
     </div>
   );

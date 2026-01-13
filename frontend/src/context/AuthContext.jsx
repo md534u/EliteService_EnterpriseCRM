@@ -22,10 +22,20 @@ export const AuthProvider = ({ children }) => {
   const login = (data) => {
     // Guardamos los datos en el navegador
     localStorage.setItem('crm_token', data.access_token);
-    localStorage.setItem('crm_user', JSON.stringify({ username: data.username, role: data.role }));
+    localStorage.setItem('crm_user', JSON.stringify({ 
+      username: data.username, 
+      role: data.role,
+      full_name: data.full_name,
+      position: data.position
+    }));
     
     setToken(data.access_token);
-    setUser({ username: data.username, role: data.role });
+    setUser({ 
+      username: data.username, 
+      role: data.role,
+      full_name: data.full_name,
+      position: data.position
+    });
   };
 
   const logout = () => {
