@@ -159,6 +159,8 @@ def delete_user(user_id: int):
 @router.post("/login", response_model=Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     # OAuth2PasswordRequestForm espera 'username' y 'password'
+    print(f"🔍 DEBUG LOGIN: Intento de acceso recibido para usuario: '{form_data.username}'")
+    
     conn = get_db_connection()
     if not conn:
         raise HTTPException(status_code=500, detail="Error de conexión")

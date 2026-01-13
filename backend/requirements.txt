@@ -7,3 +7,4 @@ python-socketio
 passlib
 python-jose[cryptography]
 imap_tools
+psycopg2-binary
